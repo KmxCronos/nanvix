@@ -1,19 +1,14 @@
 #include <sys/sem.h>
+#include <nanvix/klib.h>
 
 int sys_semop(int semid, int op){
-    /*
-	int valReturn;
-
-	if (op < 0) {
-		for (int i = 0; i < -op; i++){valReturn = down(semid);}
+	if(op > 0){
+		return up(semid);
 	}
-  else if (op > 0) {
-		for (int i = 0; i < op; i++){valReturn = up(semid);}
+	else if(op < 0){
+		return down(semid);
 	}
-	else {
-		valReturn = -1;
+	else{
+		return -1;
 	}
-
-	return valReturn;*/
-    return semid + op;
 }

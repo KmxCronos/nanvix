@@ -1,21 +1,19 @@
 #include <sys/sem.h>
+#include <nanvix/const.h>
 
-int sys_semget(unsigned key){
-    /*
-	struct semaphore *s = FIRST_SEM;
-	int semid = 0;
+/**
+ * @brief Creates a semaphore.
+ */
+PUBLIC int sys_semget(unsigned key){
+	semaphore_t * s;
+	int i = 0;
 
-	while (s <= LAST_SEM && (!s->exists || s->key != key)) {
-		semid++;
-		s++;
-	}
+	//We find an already existing semaphore with this key
+	for(s = FIRST_SEM; s <= LAST_SEM; s++, i++){
+		if(s->key == (int)key)
+			return i;
+    }
 
-	if (s <= LAST_SEM) {
-		return semid;
-	}
-  else{
-		semid  = create(COUNT_INIT, key);
-		return semid;
-	}*/
-    return (int)key;
+	//Else we return a new one
+	return create(key);
 }

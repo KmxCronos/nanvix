@@ -22,6 +22,7 @@
 #include <nanvix/config.h>
 #include <sys/times.h>
 #include <sys/wait.h>
+#include <nanvix/klib.h>
 #include <sys/sem.h>
 #include <stdio.h>
 #include <signal.h>
@@ -447,7 +448,9 @@ int semaphore_test3(void)
 	SEM_INIT(full, 0);
 	SEM_INIT(empty, BUFFER_SIZE);
 	SEM_INIT(mutex, 1);
-	
+
+	printf("Creation/initialisation done\n");
+
 	if ((pid = fork()) < 0)
 		return (-1);
 	

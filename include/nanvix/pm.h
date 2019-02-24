@@ -87,6 +87,7 @@
 	#define PRIO_SUPERBLOCK  -40 /**< Waiting for super block.     */
 	#define PRIO_REGION      -20 /**< Waiting for memory region.   */
 	#define PRIO_TTY           0 /**< Waiting for terminal I/O.    */
+	#define PRIO_SEM		  10 /**< Waiting for semaphore.       */
 	#define PRIO_SIG          20 /**< Waiting for signal.          */
 	#define PRIO_USER         40 /**< User priority.               */
 	/**@}*/

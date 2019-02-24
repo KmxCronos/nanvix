@@ -19,6 +19,7 @@
 
 #ifndef SEM_H_
 #define SEM_H_
+	#include <nanvix/pm.h>
 
 	/**
 	 * @brief Comand values for semaphores.
@@ -29,9 +30,35 @@
 	#define IPC_RMID 3 /**< Destroys a semaphore.            */
 	/**@}*/
 
+	/**
+	 * @name Semaphore table boundaries
+	 */
+	/**@{*/
+	#define FIRST_SEM ((&semtab[0]))           /**< First process. */
+	#define LAST_SEM ((&semtab[SEM_MAX - 1])) /**< Last process.  */
+	/**@}*/
+
+	#define IS_SEM_VALID(semid) (if(semid >= 0 && semid < SEM_MAX && semtab[semid].key != -1) TRUE ? FALSE)
+
+	#define SEM_MAX 100
+
+	typedef struct{
+		int key;
+		int value;
+		struct process * queue;
+	} semaphore_t;
+
 	/* Forward definitions. */
 	extern int semget(unsigned);
 	extern int semctl(int, int, int);
 	extern int semop(int, int);
 
+	extern int is_sem_valid(int semid);
+	extern void sem_init(void);
+	extern int create(unsigned);
+	extern int up(int);
+	extern int down(int);
+	extern int destroy(int);
+
+	extern semaphore_t semtab[SEM_MAX];
 #endif /* SEM_H_ */

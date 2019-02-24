@@ -25,6 +25,7 @@
 #include <nanvix/dev.h>
 #include <nanvix/pm.h>
 #include <nanvix/mm.h>
+#include <sys/sem.h>
 #include <nanvix/syscall.h>
 #include <fcntl.h>
 
@@ -121,6 +122,7 @@ PUBLIC void kmain(void)
 	dev_init();
 	mm_init();
 	pm_init();
+	sem_init();
 	fs_init();
 	
 	chkout(DEVID(TTY_MAJOR, 0, CHRDEV));

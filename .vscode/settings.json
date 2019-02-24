@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "sem.h": "c",
+        "types.h": "c",
+        "const.h": "c",
+        "hal.h": "c",
+        "pm.h": "c",
+        "klib.h": "c"
+    }
+}
