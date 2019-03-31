@@ -282,6 +282,7 @@ PRIVATE struct
 	unsigned age;   /**< Age.                 */
 	pid_t owner;    /**< Page owner.          */
 	addr_t addr;    /**< Address of the page. */
+	int counter_access;    /**< Counter of the number of the page access (LRU). */
 } frames[NR_FRAMES] = {{0, 0, 0, 0},  };
 
 /**
@@ -293,12 +294,12 @@ PRIVATE struct
 PRIVATE int allocf(void)
 {
 	int i;      /* Loop index.  */
-	int oldest; /* Oldest page. */
+	int least_used; /* Oldest page. */
 	
 	#define OLDEST(x, y) (frames[x].age < frames[y].age)
 	
 	/* Search for a free frame. */
-	oldest = -1;
+	least_used = -1;
 	for (i = 0; i < NR_FRAMES; i++)
 	{
 		/* Found it. */
@@ -312,18 +313,18 @@ PRIVATE int allocf(void)
 			if (frames[i].count > 1)
 				continue;
 			
-			/* Oldest page found. */
-			if ((oldest < 0) || (OLDEST(i, oldest)))
-				oldest = i;
+			/* Least used page found. */
+			if ((least_used < 0) || frames[i].counter_access < frames[least_used].counter_access )
+				least_used = i;
 		}
 	}
 	
 	/* No frame left. */
-	if (oldest < 0)
+	if (least_used < 0)
 		return (-1);
 	
 	/* Swap page out. */
-	if (swap_out(curr_proc, frames[i = oldest].addr))
+	if (swap_out(curr_proc, frames[i = least_used].addr))
 		return (-1);
 	
 found:		
@@ -794,4 +795,28 @@ error1:
 	unlockreg(reg);
 error0:
 	return (-1);
+}
+
+/**
+ * Reset the access flag of all the pages at a fixed frequency 
+ */
+PUBLIC void resetframe(void)
+{
+	for(int i = 0; i < NR_FRAMES; i++){
+		(getpte(curr_proc, frames[i].addr))->accessed = 0;
+	}
+}
+
+/**
+ * Increase the counter_access of all pages that have been used since the last reset 
+ */
+PUBLIC void update_counter_access(void)
+{
+	struct pte * page;
+	for(int i = 0; i < NR_FRAMES; i++){
+		page = getpte(curr_proc, frames[i].addr); 
+		if(frames[i].count > 0){
+			frames[i].counter_access++;
+		}
+	}
 }

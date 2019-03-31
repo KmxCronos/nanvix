@@ -171,3 +171,4 @@ PUBLIC int fudword(const void *addr)
 	
 	return (dword);
 }
+

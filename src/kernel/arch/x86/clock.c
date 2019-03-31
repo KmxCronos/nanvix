@@ -28,13 +28,20 @@ PUBLIC unsigned ticks = 0;
 /* Time at system startup. */
 PUBLIC unsigned startup_time = 0;
 
+/* Frequence of cache accessed flag reset */
+PUBLIC unsigned reset_access = 50;
+
 /*
  * Handles a timer interrupt.
  */
 PRIVATE void do_clock()
 {
 	ticks++;
-	
+
+	if((ticks % reset_access) == 0)
+		update_counter_access();
+		resetframe();
+
 	if (KERNEL_RUNNING(curr_proc))
 	{
 		curr_proc->ktime++;
