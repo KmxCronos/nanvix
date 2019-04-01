@@ -283,7 +283,7 @@ PRIVATE struct
 	pid_t owner;    /**< Page owner.          */
 	addr_t addr;    /**< Address of the page. */
 	int counter_access;    /**< Counter of the number of the page access (LRU). */
-} frames[NR_FRAMES] = {{0, 0, 0, 0},  };
+} frames[NR_FRAMES] = {{0, 0, 0, 0, 0},  };
 
 /**
  * @brief Allocates a page frame.
@@ -326,7 +326,7 @@ PRIVATE int allocf(void)
 	/* Swap page out. */
 	if (swap_out(curr_proc, frames[i = least_used].addr))
 		return (-1);
-	
+	kprintf("Swap\n");
 found:		
 
 	frames[i].age = ticks;
@@ -812,9 +812,9 @@ PUBLIC void resetframe(void)
  */
 PUBLIC void update_counter_access(void)
 {
-	struct pte * page;
+	//struct pte * page;
 	for(int i = 0; i < NR_FRAMES; i++){
-		page = getpte(curr_proc, frames[i].addr); 
+		//page = getpte(curr_proc, frames[i].addr); 
 		if(frames[i].count > 0){
 			frames[i].counter_access++;
 		}
