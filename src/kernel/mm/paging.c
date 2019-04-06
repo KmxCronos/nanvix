@@ -299,6 +299,7 @@ PRIVATE int allocf(void)
 	
 	/* Search for a free frame. */
 	oldest = -1;
+	struct pte *pte;
 	for (i = 0; i < NR_FRAMES; i++)
 	{
 		/* Found it. */
@@ -313,8 +314,19 @@ PRIVATE int allocf(void)
 				continue;
 			
 			/* Oldest page found. */
-			if ((oldest < 0) || (OLDEST(i, oldest)))
-				oldest = i;
+			if ((oldest < 0) || (OLDEST(i, oldest))){
+				pte = getpte(curr_proc, frames[i].addr);
+				
+				//Check if the page has been accessed
+				if(pte->accessed > 0){
+					//If this is the case reset the bit, and put back the page as a new one in the queue
+					pte->accessed = 0;
+					frames[i].age = 0;	
+				}
+				else{
+					oldest = i;
+				}
+			}
 		}
 	}
 	
