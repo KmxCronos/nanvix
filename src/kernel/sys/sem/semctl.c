@@ -3,8 +3,9 @@
 
 //TODO check for invalid semaphore
 int sys_semctl(int semid, int cmd, int val){
-    if(!is_sem_valid(semid))
+    if(!is_sem_valid(semid)){
         return -1;
+	}
 		
 	switch(cmd){
 		case GETVAL:

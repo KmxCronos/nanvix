@@ -68,7 +68,7 @@
 	EXTERN void mm_init(void);
 	EXTERN void *getkpg(int);
 	PUBLIC void resetframe(void);
-	PUBLIC void update_counter_access(void)
+	PUBLIC void update_counter_access(void);
 
 #endif /* _ASM_FILE_ */
 	

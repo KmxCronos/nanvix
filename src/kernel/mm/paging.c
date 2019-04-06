@@ -283,7 +283,7 @@ PRIVATE struct
 	pid_t owner;    /**< Page owner.          */
 	addr_t addr;    /**< Address of the page. */
 	int counter_access;    /**< Counter of the number of the page access (LRU). */
-} frames[NR_FRAMES] = {{0, 0, 0, 0},  };
+} frames[NR_FRAMES] = {{0, 0, 0, 0, 0},  };
 
 /**
  * @brief Allocates a page frame.
@@ -800,7 +800,7 @@ error0:
 /**
  * Reset the access flag of all the pages at a fixed frequency 
  */
-PUBLIC void resetframe(void)
+PUBLIC void resetframe()
 {
 	for(int i = 0; i < NR_FRAMES; i++){
 		(getpte(curr_proc, frames[i].addr))->accessed = 0;
@@ -810,13 +810,13 @@ PUBLIC void resetframe(void)
 /**
  * Increase the counter_access of all pages that have been used since the last reset 
  */
-PUBLIC void update_counter_access(void)
+PUBLIC void update_counter_access()
 {
 	struct pte * page;
 	for(int i = 0; i < NR_FRAMES; i++){
 		page = getpte(curr_proc, frames[i].addr); 
-		if(frames[i].count > 0){
-			frames[i].counter_access++;
-		}
+
+		frames[i].counter_access = frames[i].count >> 1;
+		frames[i].counter_access = page->accessed << (sizeof(int) * 8 - 1) | frames[i].counter_access;
 	}
 }
