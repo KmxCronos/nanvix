@@ -38,5 +38,7 @@
 	
 	/* Time at system startup. */
 	EXTERN unsigned startup_time;
+
+	EXTERN unsigned reset_access;
 	
 #endif /* TIMER_H_ */

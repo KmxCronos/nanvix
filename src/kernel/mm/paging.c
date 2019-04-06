@@ -293,18 +293,18 @@ PRIVATE struct
 PRIVATE int allocf(void)
 {
 	int i;      /* Loop index.  */
-	int oldest; /* Oldest page. */
-	
-	#define OLDEST(x, y) (frames[x].age < frames[y].age)
-	
+		
 	/* Search for a free frame. */
-	oldest = -1;
+	int lowest_classe = -1;
+	int lowest_classe_i = -1;
+	struct pte * page;
+	
 	for (i = 0; i < NR_FRAMES; i++)
 	{
 		/* Found it. */
 		if (frames[i].count == 0)
 			goto found;
-		
+	
 		/* Local page replacement policy. */
 		if (frames[i].owner == curr_proc->pid)
 		{
@@ -312,18 +312,46 @@ PRIVATE int allocf(void)
 			if (frames[i].count > 1)
 				continue;
 			
-			/* Oldest page found. */
-			if ((oldest < 0) || (OLDEST(i, oldest)))
-				oldest = i;
+			//Find the classe of the page
+			int classe;
+			page = getpte(curr_proc, frames[i].addr);
+			
+			//Classe 0: not referenced, not modified
+			if(page->accessed == 0 && page->dirty == 0){
+				classe = 0;
+			}
+			//Classe 1: not referenced, modified
+			else if(page->accessed == 0 && page->dirty == 1){
+				classe = 1;
+			}
+			//Classe 2: referenced, not modified
+			else if(page->accessed == 1 && page->dirty == 0){
+				classe = 2;
+			}
+			//Classe 3: referenced, modified
+			else{
+				classe = 3;
+			}
+
+			/* Lower page found. */
+			if ((lowest_classe < 0) || classe < lowest_classe){
+				lowest_classe = i;
+				lowest_classe_i = i;
+			}
+			else if(classe == lowest_classe){
+				if(krand() % 2){
+					lowest_classe_i = i;
+				}
+			}
 		}
 	}
 	
 	/* No frame left. */
-	if (oldest < 0)
+	if (lowest_classe_i < 0)
 		return (-1);
 	
 	/* Swap page out. */
-	if (swap_out(curr_proc, frames[i = oldest].addr))
+	if (swap_out(curr_proc, frames[i = lowest_classe_i].addr))
 		return (-1);
 	
 found:		
@@ -794,4 +822,11 @@ error1:
 	unlockreg(reg);
 error0:
 	return (-1);
+}
+
+PUBLIC void resetframe()
+{
+	for(int i = 0; i < NR_FRAMES; i++){
+		(getpte(curr_proc, frames[i].addr))->accessed = 0;
+	}
 }
