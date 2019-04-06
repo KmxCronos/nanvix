@@ -326,7 +326,7 @@ PRIVATE int allocf(void)
 	/* Swap page out. */
 	if (swap_out(curr_proc, frames[i = least_used].addr))
 		return (-1);
-	
+	kprintf("Swap\n");
 found:		
 
 	frames[i].age = ticks;
