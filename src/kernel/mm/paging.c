@@ -817,6 +817,6 @@ PUBLIC void update_counter_access()
 		page = getpte(curr_proc, frames[i].addr); 
 
 		frames[i].counter_access = frames[i].count >> 1;
-		frames[i].counter_access = page->accessed << (sizeof(int) * 8 - 1) | frames[i].counter_access;
+		frames[i].counter_access = page->accessed << (sizeof(int) - 1) | frames[i].counter_access;
 	}
 }
