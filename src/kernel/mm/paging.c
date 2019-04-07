@@ -317,19 +317,38 @@ PRIVATE int allocf(void)
 			if ((oldest < 0) || (OLDEST(i, oldest))){
 				pte = getpte(curr_proc, frames[i].addr);
 				
-				//Check if the page has been accessed
-				if(pte->accessed > 0){
-					//If this is the case reset the bit, and put back the page as a new one in the queue
-					pte->accessed = 0;
-					frames[i].age = 0;	
-				}
-				else{
+				//Check if the page has not been accessed
+				if(pte->accessed <= 0){
 					oldest = i;
 				}
 			}
 		}
 	}
-	
+	//We have the eldest page that has not been accessed, now we need to reset 
+	//all the elder pages that have been accessed
+	for (i = 0; i < NR_FRAMES; i++)
+	{
+		/* Found it. */
+		if (frames[i].count == 0)
+			goto found;
+		
+		/* Local page replacement policy. */
+		if (frames[i].owner == curr_proc->pid)
+		{
+			/* Skip shared pages. */
+			if (frames[i].count > 1)
+				continue;
+			
+			/* Oldest page found. */
+			if (frames[i].age > frames[oldest].age){
+				pte = getpte(curr_proc, frames[i].addr);
+
+				pte->accessed = 0;
+				frames[i].age = 0;	
+			}
+		}
+	}
+
 	/* No frame left. */
 	if (oldest < 0)
 		return (-1);

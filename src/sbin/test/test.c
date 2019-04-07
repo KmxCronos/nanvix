@@ -52,7 +52,7 @@ static unsigned flags = VERBOSE | FULL;
  */
 static int swap_test(void)
 {
-	#define N 1280
+	#define N 640
 	int *a, *b, *c;
 	clock_t t0, t1;
 	struct tms timing;
@@ -107,8 +107,7 @@ static int swap_test(void)
 	t1 = times(&timing);
 	
 	/* Print timing statistics. */
-	if (flags & VERBOSE)
-		printf("  Elapsed: %d\n", t1 - t0);
+	printf("  Elapsed: %d\n", t1 - t0);
 	
 	return (0);
 
